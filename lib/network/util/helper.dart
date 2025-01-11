@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 // import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:get/get.dart';
+import 'package:reqres_app/App/auth/login/loginScreen.dart';
 import 'package:reqres_app/network/model/errorModal.dart';
-import 'package:reqres_app/network/model/result.dart';
 import 'package:reqres_app/widget/DialogHelper.dart';
 
 class Helper {
@@ -26,6 +27,11 @@ class Helper {
 
   createErrorModal(response) {
     var error = ApiError.fromJson(json.decode(response.body));
+    if (error.error?.status == 401) {
+      final box = GetStorage();
+      box.remove('token');
+      Get.offAll(LoginScreen());
+    }
     DialogHelper.showErrorDialog(
         title: "Error Code: ${error.error!.status}",
         description: error.error?.message ?? "");

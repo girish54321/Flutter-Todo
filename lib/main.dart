@@ -4,6 +4,7 @@ import 'package:reqres_app/App/HomeScreen/HomeScreen.dart';
 import 'package:get/get.dart';
 import 'package:reqres_app/App/auth/login/loginScreen.dart';
 import 'package:reqres_app/flavors.dart';
+import 'package:reqres_app/state/authState.dart';
 import 'package:reqres_app/state/settingsState.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:reqres_app/state/userTodoState.dart';
@@ -20,6 +21,7 @@ class ReqResApp extends StatelessWidget {
     GetStorage box = GetStorage();
     GetInstance().put<SettingController>(SettingController());
     GetInstance().put(UserTodoController());
+    GetInstance().put(AuthController());
 
     return GetMaterialApp(
       title: 'Flutter Demo',

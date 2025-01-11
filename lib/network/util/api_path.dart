@@ -1,4 +1,4 @@
-enum APIPath { login, users, signUp }
+enum APIPath { login, users, signUp, profile, updateProfile }
 
 enum TodoAPIPath { getTodo, deletetodo, createTodo }
 
@@ -11,6 +11,10 @@ class APIPathHelper {
         return "auth/signup";
       case APIPath.users:
         return "/users";
+      case APIPath.updateProfile:
+        return "profile/update-profile";
+      case APIPath.profile:
+        return "/profile/user-profile";
       default:
         return "";
     }

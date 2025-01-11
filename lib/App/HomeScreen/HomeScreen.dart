@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/instance_manager.dart';
 import 'package:reqres_app/App/SettingsScreen/SettingsScreen.dart';
 import 'package:reqres_app/App/UserTodoScreen/UserTodoScreen.dart';
+import 'package:reqres_app/state/authState.dart';
 
 class AppMenuItem {
   final String id;
@@ -16,6 +18,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final AuthController authController = Get.find();
+
+  @override
+  void initState() {
+    authController.fetchUserProfile();
+    super.initState();
+  }
+
   int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {

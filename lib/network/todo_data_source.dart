@@ -78,7 +78,6 @@ class TodoDataSource {
         return incomingData;
       }
     } catch (error) {
-      print(error);
       incomingData = Result.error("Something went wrong!");
       DialogHelper.showErrorDialog(description: "Something went wrong!");
       return incomingData;
