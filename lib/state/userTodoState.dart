@@ -34,7 +34,7 @@ class UserTodoController extends GetxController {
       if (response is SuccessState) {
         var res = response.value as SuccessMutation;
         if (res.success == true) {
-          // Helper().goBack();
+          Helper().goBack();
           getSelctedTodoInfo();
         }
       } else {}

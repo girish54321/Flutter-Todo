@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:reqres_app/App/FileHelper/imagePicker.dart';
 import 'package:reqres_app/AppConst/AppConst.dart';
 import 'package:reqres_app/state/authState.dart';
 import 'package:reqres_app/state/settingsState.dart';
@@ -31,47 +32,15 @@ class _SettingsScreenState extends State<EditProfileScreen> {
   final firstName = TextEditingController();
   final lastNmae = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  CroppedFile? croppedFile;
   File? localFile;
 
-  Future<void> attachFile() async {
-    FilePickerResult? result =
-        await FilePicker.platform.pickFiles(type: FileType.image);
-
-    if (result != null) {
-      cropImage(result);
-      setState(() {});
-    } else {
-      // User canceled the picker
+  Future<void> pickImage() async {
+    var file = await Imagepicker().imagePicker();
+    if (file != null) {
+      setState(() {
+        localFile = file;
+      });
     }
-  }
-
-  Future<void> cropImage(FilePickerResult? file) async {
-    croppedFile = await ImageCropper().cropImage(
-      sourcePath: file?.files.single.path ?? '',
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Cropper',
-          toolbarColor: Colors.deepOrange,
-          toolbarWidgetColor: Colors.white,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.square,
-          ],
-        ),
-        IOSUiSettings(
-          title: 'Cropper',
-          aspectRatioLockEnabled: true,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.square,
-          ],
-        ),
-        WebUiSettings(
-          context: context,
-        ),
-      ],
-    );
-    localFile = File(croppedFile!.path);
-    setState(() {});
   }
 
   @override
@@ -165,7 +134,7 @@ class _SettingsScreenState extends State<EditProfileScreen> {
                                                     color: Colors.white,
                                                   ),
                                                   child: IconButton(
-                                                      onPressed: attachFile,
+                                                      onPressed: pickImage,
                                                       icon: const Icon(
                                                         Icons.edit,
                                                         color: Colors.pink,

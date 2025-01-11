@@ -4,13 +4,33 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:reqres_app/App/FileHelper/imagePicker.dart';
 import 'package:reqres_app/state/userTodoState.dart';
 import 'package:reqres_app/widget/appInputText.dart';
 import 'package:reqres_app/widget/appText.dart';
 import 'package:reqres_app/widget/buttons.dart';
 import 'package:rules/rules.dart';
 
-enum Calendar { pending, completed, inprogress }
+enum TodoStateEnum {
+  pending,
+  inProgress,
+  completed,
+}
+
+extension TodoStatExtension on TodoStateEnum {
+  String get name {
+    switch (this) {
+      case TodoStateEnum.pending:
+        return 'pending';
+      case TodoStateEnum.completed:
+        return 'completed';
+      case TodoStateEnum.inProgress:
+        return 'in-progress';
+      default:
+        return "";
+    }
+  }
+}
 
 class CreateTodoScreen extends StatefulWidget {
   final bool isUpdate;
@@ -27,50 +47,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   final UserTodoController userTodoController = Get.find();
   CroppedFile? croppedFile;
   File? localFile;
-  Calendar calendarView = Calendar.pending;
-
-  Future<void> attachFile() async {
-    FilePickerResult? result =
-        await FilePicker.platform.pickFiles(type: FileType.image);
-
-    if (result != null) {
-      cropImage(result);
-      setState(() {});
-    } else {
-      // User canceled the picker
-    }
-  }
-
-  Future<void> cropImage(FilePickerResult? file) async {
-    croppedFile = await ImageCropper().cropImage(
-      sourcePath: file?.files.single.path ?? '',
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Cropper',
-          toolbarColor: Colors.deepOrange,
-          toolbarWidgetColor: Colors.white,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.square,
-            // CropAspectRatioPresetCustom(),
-          ],
-        ),
-        IOSUiSettings(
-          title: 'Cropper',
-          aspectRatioPresets: [
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.square,
-            // CropAspectRatioPresetCustom(), // IMPORTANT: iOS supports only one custom aspect ratio in preset list
-          ],
-        ),
-        WebUiSettings(
-          context: context,
-        ),
-      ],
-    );
-    localFile = File(croppedFile!.path);
-    setState(() {});
-  }
+  TodoStateEnum todoStateEnum = TodoStateEnum.pending;
 
   void updateTodo() {
     if (_formKey.currentState!.validate()) {
@@ -78,7 +55,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         "toDoId": userTodoController.selectedTodo.value?.toDoId ?? 0,
         "title": titleController.text,
         "body": bodyController.text,
-        "state": 'pending',
+        "state": todoStateEnum.name
       };
       userTodoController.updateSelectedTodo(parameter);
     }
@@ -93,7 +70,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
       var parameter = {
         "title": titleController.text,
         "body": bodyController.text,
-        "state": "pending"
+        "state": todoStateEnum.name
       };
       userTodoController.createTodo(parameter, localFile);
     }
@@ -103,6 +80,18 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
     if (widget.isUpdate == true) {
       titleController.text = userTodoController.selectedTodo.value?.title ?? "";
       bodyController.text = userTodoController.selectedTodo.value?.body ?? "";
+      todoStateEnum = TodoStateEnum.values.firstWhere(
+        (item) => item.name == userTodoController.selectedTodo.value?.state,
+      );
+    }
+  }
+
+  Future<void> pickImage() async {
+    var file = await Imagepicker().imagePicker();
+    if (file != null) {
+      setState(() {
+        localFile = file;
+      });
     }
   }
 
@@ -138,7 +127,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                       AppBar(
                           actions: [
                             IconButton(
-                                onPressed: attachFile,
+                                onPressed: pickImage,
                                 icon: const Icon(Icons.attach_file_sharp))
                           ],
                           title: FadeInRight(
@@ -208,27 +197,27 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                                   const SizedBox(
                                     height: 12,
                                   ),
-                                  SegmentedButton<Calendar>(
-                                    segments: const <ButtonSegment<Calendar>>[
-                                      ButtonSegment<Calendar>(
-                                          value: Calendar.pending,
-                                          label: Text('Day'),
-                                          icon: Icon(Icons.calendar_view_day)),
-                                      ButtonSegment<Calendar>(
-                                          value: Calendar.inprogress,
-                                          label: Text('Month'),
-                                          icon:
-                                              Icon(Icons.calendar_view_month)),
-                                      ButtonSegment<Calendar>(
-                                          value: Calendar.completed,
-                                          label: Text('Year'),
-                                          icon: Icon(Icons.calendar_today)),
+                                  SegmentedButton<TodoStateEnum>(
+                                    segments: const <ButtonSegment<
+                                        TodoStateEnum>>[
+                                      ButtonSegment<TodoStateEnum>(
+                                        value: TodoStateEnum.pending,
+                                        label: Text("Pending"),
+                                      ),
+                                      ButtonSegment<TodoStateEnum>(
+                                        value: TodoStateEnum.inProgress,
+                                        label: Text('in Progress'),
+                                      ),
+                                      ButtonSegment<TodoStateEnum>(
+                                        value: TodoStateEnum.completed,
+                                        label: Text('Completed'),
+                                      ),
                                     ],
-                                    selected: <Calendar>{calendarView},
+                                    selected: <TodoStateEnum>{todoStateEnum},
                                     onSelectionChanged:
-                                        (Set<Calendar> newSelection) {
+                                        (Set<TodoStateEnum> newSelection) {
                                       setState(() {
-                                        calendarView = newSelection.first;
+                                        todoStateEnum = newSelection.first;
                                       });
                                     },
                                   ),
