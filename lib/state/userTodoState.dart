@@ -29,6 +29,32 @@ class UserTodoController extends GetxController {
     super.onClose();
   }
 
+  void updateSelectedTodo(parameter) {
+    apiResponse.updateTodo(parameter).then((response) {
+      if (response is SuccessState) {
+        var res = response.value as SuccessMutation;
+        if (res.success == true) {
+          // Helper().goBack();
+          getSelctedTodoInfo();
+        }
+      } else {}
+    }).catchError((error) {});
+  }
+
+  void getSelctedTodoInfo() {
+    if (selectedTodo.value?.toDoId == null) {
+      return;
+    }
+    apiResponse.getTodoDetails(selectedTodo.value!.toDoId!).then((response) {
+      if (response is SuccessState) {
+        var res = response.value as TodoDetailsModal;
+        selectedTodo.value = res.todo;
+        selectedTodo.refresh();
+        getListOfTodo();
+      } else {}
+    }).catchError((error) {});
+  }
+
   void selectTodo(UserTodoResponseTodo? todo) {
     selectedTodo.value = todo;
   }

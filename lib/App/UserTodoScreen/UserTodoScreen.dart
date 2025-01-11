@@ -68,7 +68,11 @@ class _UserTodoScreenState extends State<UserTodoScreen> {
       })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Helper().goToPage(context: context, child: const CreateTodoScreen());
+          Helper().goToPage(
+              context: context,
+              child: const CreateTodoScreen(
+                isUpdate: false,
+              ));
         },
         child: const Icon(Icons.add),
       ),

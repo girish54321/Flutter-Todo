@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:animate_do/animate_do.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,8 @@ import 'package:rules/rules.dart';
 enum Calendar { pending, completed, inprogress }
 
 class CreateTodoScreen extends StatefulWidget {
-  const CreateTodoScreen({Key? key}) : super(key: key);
+  final bool isUpdate;
+  const CreateTodoScreen({Key? key, required this.isUpdate}) : super(key: key);
 
   @override
   State<CreateTodoScreen> createState() => _CreateTodoScreenState();
@@ -72,7 +72,23 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
     setState(() {});
   }
 
+  void updateTodo() {
+    if (_formKey.currentState!.validate()) {
+      var parameter = {
+        "toDoId": userTodoController.selectedTodo.value?.toDoId ?? 0,
+        "title": titleController.text,
+        "body": bodyController.text,
+        "state": 'pending',
+      };
+      userTodoController.updateSelectedTodo(parameter);
+    }
+  }
+
   void createNewTodo() {
+    if (widget.isUpdate) {
+      updateTodo();
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       var parameter = {
         "title": titleController.text,
@@ -81,6 +97,19 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
       };
       userTodoController.createTodo(parameter, localFile);
     }
+  }
+
+  void autoFill() {
+    if (widget.isUpdate == true) {
+      titleController.text = userTodoController.selectedTodo.value?.title ?? "";
+      bodyController.text = userTodoController.selectedTodo.value?.body ?? "";
+    }
+  }
+
+  @override
+  void initState() {
+    autoFill();
+    super.initState();
   }
 
   @override
@@ -92,6 +121,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isUpdate = widget.isUpdate;
     return Scaffold(
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
@@ -113,7 +143,8 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                           ],
                           title: FadeInRight(
                               duration: const Duration(milliseconds: 500),
-                              child: const Text("Create Todo"))),
+                              child: Text(
+                                  isUpdate ? "Edit Todo" : "Create Todo"))),
                       Column(
                         children: [
                           FadeInRight(
@@ -208,10 +239,10 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                                     function: () {
                                       createNewTodo();
                                     },
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
-                                        "Create",
-                                        style: TextStyle(
+                                        isUpdate ? "Edit Todo" : "Create",
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),

@@ -78,17 +78,9 @@ class ReqResClient {
     );
     request.fields.addAll(parameter);
     request.headers.addAll(headers);
-    // print("request: " + request.toString());
-    // return request.send();
     var res = await request.send();
-    print("'uploas");
     http.Response response = await http.Response.fromStream(res);
     return response;
-    // var res = await request.send();
-    // http.Response response = await http.Response.fromStream(res);
-    // setState(() {
-    //   resJson = jsonDecode(response.body);
-    // });
   }
 
   String queryParameters(Map<String, String> params) {

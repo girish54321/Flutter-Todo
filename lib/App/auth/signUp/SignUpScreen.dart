@@ -41,7 +41,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void changeRemember(bool value) {
-    print(value);
     setState(() {
       rememberMe = value;
     });

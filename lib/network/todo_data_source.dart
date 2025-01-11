@@ -83,4 +83,50 @@ class TodoDataSource {
       return incomingData;
     }
   }
+
+  Future<Result> getTodoDetails(id) async {
+    Result incomingData = Result.loading("Loading");
+    try {
+      final response = await client.request(
+        requestType: RequestType.GET,
+        path: TodoApiPathHelper.getValue(TodoAPIPath.getTodoInfo) + id,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        incomingData = Result<TodoDetailsModal>.success(
+            TodoDetailsModal.fromJson(json.decode(response.body)));
+        return incomingData;
+      } else {
+        Helper().createErrorModal(response);
+        incomingData = Result.error(response.statusCode);
+        return incomingData;
+      }
+    } catch (error) {
+      incomingData = Result.error("Something went wrong!");
+      DialogHelper.showErrorDialog(description: "Something went wrong!");
+      return incomingData;
+    }
+  }
+
+  Future<Result> updateTodo(parameter) async {
+    Result incomingData = Result.loading("Loading");
+    try {
+      final response = await client.request(
+          requestType: RequestType.POST,
+          path: TodoApiPathHelper.getValue(TodoAPIPath.updatetodo),
+          parameter: parameter);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        incomingData = Result<SuccessMutation>.success(
+            SuccessMutation.fromJson(json.decode(response.body)));
+        return incomingData;
+      } else {
+        Helper().createErrorModal(response);
+        incomingData = Result.error(response.statusCode);
+        return incomingData;
+      }
+    } catch (error) {
+      incomingData = Result.error("Something went wrong!");
+      DialogHelper.showErrorDialog(description: "Something went wrong!");
+      return incomingData;
+    }
+  }
 }

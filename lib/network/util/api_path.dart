@@ -1,6 +1,6 @@
 enum APIPath { login, users, signUp, profile, updateProfile }
 
-enum TodoAPIPath { getTodo, deletetodo, createTodo }
+enum TodoAPIPath { getTodo, deletetodo, createTodo, updatetodo, getTodoInfo }
 
 class APIPathHelper {
   static String getValue(APIPath path) {
@@ -30,6 +30,10 @@ class TodoApiPathHelper {
         return "todo/deletetodo/";
       case TodoAPIPath.createTodo:
         return "todo/addtodo";
+      case TodoAPIPath.updatetodo:
+        return "todo/updatetodo";
+      case TodoAPIPath.getTodoInfo:
+        return "/todo/gettodo/";
       default:
         return "";
     }

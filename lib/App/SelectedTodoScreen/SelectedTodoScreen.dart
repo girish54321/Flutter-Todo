@@ -1,8 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
+import 'package:reqres_app/App/CreateTodo/CreateTodoScreen.dart';
 import 'package:reqres_app/App/HomeScreen/HomeScreen.dart';
 import 'package:reqres_app/AppConst/AppConst.dart';
 import 'package:reqres_app/network/util/helper.dart';
@@ -28,12 +26,17 @@ class _SelectedTodoScreenState extends State<SelectedTodoScreen> {
       userTodoController.deleteTodo(
         (item) {
           if (item.success == true) {
-            print("In UI");
             Helper().goBack();
           }
         },
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    userTodoController.getSelctedTodoInfo();
   }
 
   @override
@@ -48,6 +51,10 @@ class _SelectedTodoScreenState extends State<SelectedTodoScreen> {
                 if (val == "delete") {
                   deleteTodo();
                   return;
+                } else {
+                  Helper().goToPage(
+                      context: context,
+                      child: const CreateTodoScreen(isUpdate: true));
                 }
               },
               itemBuilder: (BuildContext context) {

@@ -217,3 +217,37 @@ class UserTodoResponse {
     return data;
   }
 }
+
+class TodoDetailsModal {
+/*
+{
+  "todo": {
+    "toDoId": "56bd3a55-0b0d-43ed-987d-e0317aee0fdb",
+    "title": "how is this",
+    "body": "can I go",
+    "state": "pending",
+    "createdAt": "2025-01-11T10:20:19.196Z",
+    "updatedAt": "2025-01-11T12:30:54.612Z",
+    "userId": "1c250a77-8bbc-49b6-b4e5-a61b53300997"
+  }
+} 
+*/
+
+  UserTodoResponseTodo? todo;
+
+  TodoDetailsModal({
+    this.todo,
+  });
+  TodoDetailsModal.fromJson(Map<String, dynamic> json) {
+    todo = (json['todo'] != null)
+        ? UserTodoResponseTodo.fromJson(json['todo'])
+        : null;
+  }
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    if (todo != null) {
+      data['todo'] = todo!.toJson();
+    }
+    return data;
+  }
+}
